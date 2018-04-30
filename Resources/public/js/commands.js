@@ -38,7 +38,7 @@ var saveClick = function(){
         $.get('/getMousePos', function (data) {
             command.stuff.push({'route': CLICK, 'data':data});
             command.timestamp.push(Date.now());
-            console.log('Hover');
+            console.log('Click');
         });
     }
 };
@@ -48,7 +48,7 @@ var saveHover = function(){
         $.get('/getMousePos', function (data) {
                     command.stuff.push({'route': HOVER, 'data':data});
                     command.timestamp.push(Date.now());
-                    console.log('Clicked');
+                    console.log('Hover');
         });
     }
 }
@@ -101,7 +101,7 @@ function setTimeoutForCommand(cmd, i, startTime){
 
 
 var test = function(){
-    if(!running){
+    if(!recording){
         console.log('Test');
     }
 };
