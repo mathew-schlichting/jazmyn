@@ -1,0 +1,50 @@
+apply plugin: 'java'
+
+
+repositories {
+    mavenCentral()
+}
+
+
+dependencies {
+    compile "com.sparkjava:spark-core:2.7.2" // add to build.gradle (for Java users)
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+    }
+}
+
+
+
+jar {
+    manifest {
+        attributes(
+                'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
+                'Main-Class': 'com.invert.jazmyn.Jazmyn'
+        )
+    }
+}
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes  'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
+                    'Main-Class': 'com.invert.jazmyn.Jazmyn'
+    }
+
+    from('./Resources') {
+        include 'public/**/*'
+    }
+
+
+
+    baseName = project.name + '-Runable'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+
+jar.finalizedBy(fatJar);
