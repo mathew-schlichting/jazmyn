@@ -2,8 +2,7 @@ package com.invert.jazmyn;
 
 import java.awt.*;
 import java.awt.event.InputEvent;
-
-import static java.awt.MouseInfo.getPointerInfo;
+import java.awt.MouseInfo;
 
 public class Mouse {
 
@@ -59,7 +58,7 @@ public class Mouse {
 
 
     public Point getPos(){
-        return getPointerInfo().getLocation();
+        return MouseInfo.getPointerInfo().getLocation();
     }
 
     public void click(){
@@ -67,7 +66,8 @@ public class Mouse {
         robot.mouseRelease(InputEvent.BUTTON1_MASK);
     }
 
-    public void click(int x, int y){
+    public void click(int x, int y) {
+        System.out.println(x + ":" + y);
         move(x, y);
         click();
     }

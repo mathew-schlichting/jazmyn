@@ -9,6 +9,9 @@ String.prototype.commandFormat = function() {
 };
 
 
+const CLICK = 'click';
+const HOVER = 'hover';
+const TYPE = 'type';
 
 
 var runCommand = false;
@@ -26,19 +29,29 @@ var shutdown = function() {
 
 var startRecording = function(){
     recording = true;
-    command = {click: [], timestamp: []};
+    command = {stuff: [], timestamp: []};
     console.log('Recording...');
 };
 
 var saveClick = function(){
     if(recording) {
         $.get('/getMousePos', function (data) {
-            command.click.push(data);
+            command.stuff.push({'route': CLICK, 'data':data});
             command.timestamp.push(Date.now());
-            console.log('Clicked');
+            console.log('Hover');
         });
     }
 };
+
+var saveHover = function(){
+    if(recording) {
+        $.get('/getMousePos', function (data) {
+                    command.stuff.push({'route': HOVER, 'data':data});
+                    command.timestamp.push(Date.now());
+                    console.log('Clicked');
+        });
+    }
+}
 
 var saveCommand = function(name){
     if(recording) {
@@ -61,7 +74,7 @@ var doCommand = function(name){
             console.log(cmd);
 
             startTime = cmd.timestamp[0];
-            for(i=0; i<cmd.click.length; i++){
+            for(i=0; i<cmd.stuff.length; i++){
                 setTimeoutForCommand(cmd, i, startTime);
             }
         } else {
@@ -73,7 +86,12 @@ var doCommand = function(name){
 function setTimeoutForCommand(cmd, i, startTime){
     console.log(cmd.timestamp[i] - startTime);
     setTimeout(() => {
-        $.get('/click/' + cmd.click[i].x + '/' + cmd.click[i].y + '/false', function (data) {if(!data)console.log('Failed click')});
+        if(cmd.stuff[i].route === 'type'){
+            $.get('/' + cmd.stuff[i].route + '/' + cmd.stuff[i].data, function (data) {if(!data)console.log('Failed ' + cmd.stuff[i].route)});
+        }
+        else{
+            $.get('/' + cmd.stuff[i].route + '/' + cmd.stuff[i].data.x + '/' + cmd.stuff[i].data.y, function (data) {if(!data)console.log('Failed ' + cmd.stuff[i].route)});
+        }
     }, cmd.timestamp[i] - startTime + 10);
 }
 
@@ -83,7 +101,9 @@ function setTimeoutForCommand(cmd, i, startTime){
 
 
 var test = function(){
-    console.log('Test');
+    if(!running){
+        console.log('Test');
+    }
 };
 
 var prepareCommand = function (){
@@ -99,6 +119,7 @@ var jazmynCommands = {
     'start recording': ()=>{execute(startRecording);},
     'save recording as *name': (a)=>{execute(saveCommand, a);},
     'click': ()=>{execute(saveClick);},
+    'hover': ()=>{execute(saveHover);},
     'command *name': (a)=>{execute(doCommand, a);},
     'test': ()=>{execute(test);}
 };
@@ -108,7 +129,7 @@ function execute(fun, a, b, c, d){
         fun(a, b, c, d);
     }
     else{
-        console.log('Must say "Hey Jazmyn" first!')
+        console.log('Must say "Okay Jazmyn" first!')
     }
     runCommand = false;
 }

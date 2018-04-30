@@ -12,7 +12,7 @@ public class Jazmyn {
     private static final int PORT = 5966;
 
     public static void main(String[] args) {
-        System.out.println("Starting com.invert.jazmyn.Jazmyn:");
+        System.out.println("Starting Jazmyn:");
         instance = new Jazmyn();
         instance.startServer();
     }
@@ -33,11 +33,15 @@ public class Jazmyn {
     private void startServer(){
         staticFiles.location("/public");
 
-        get("/click/:x/:y/:double", (req, res) -> {
+
+        get("/hover/:x/:y", (req, res) -> {
+            mouse.move(Integer.parseInt(req.params(":x")), Integer.parseInt(req.params(":y")));
+            return true;
+        });
+
+
+        get("/click/:x/:y/", (req, res) -> {
             mouse.click(Integer.parseInt(req.params(":x")), Integer.parseInt(req.params(":y")));
-            if(Boolean.parseBoolean(req.params(":double"))){
-                mouse.click();
-            }
             return true;
         });
 

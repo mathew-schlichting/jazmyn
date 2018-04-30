@@ -19,6 +19,7 @@ function jazmyn (){
         if(annyang) {
             console.log('Annyang successfully installed');
             annyang.addCommands(jazmynCommands);//add commands
+            annyang.debug();
             startListening();
         }
         else{
