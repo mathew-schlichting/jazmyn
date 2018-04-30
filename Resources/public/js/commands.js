@@ -33,6 +33,12 @@ var startRecording = function(){
     console.log('Recording...');
 };
 
+var saveType = function(words){
+    command.stuff.push({'route': TYPE, 'data':words});
+    command.timestamp.push(Date.now());
+    console.log('Type: ', words);
+}
+
 var saveClick = function(){
     if(recording) {
         $.get('/getMousePos', function (data) {
@@ -120,6 +126,7 @@ var jazmynCommands = {
     'save recording as *name': (a)=>{execute(saveCommand, a);},
     'click': ()=>{execute(saveClick);},
     'hover': ()=>{execute(saveHover);},
+    'type *words': (a)=>{execute(saveType, a);},
     'command *name': (a)=>{execute(doCommand, a);},
     'test': ()=>{execute(test);}
 };

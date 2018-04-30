@@ -40,7 +40,7 @@ public class Jazmyn {
         });
 
 
-        get("/click/:x/:y/", (req, res) -> {
+        get("/click/:x/:y", (req, res) -> {
             mouse.click(Integer.parseInt(req.params(":x")), Integer.parseInt(req.params(":y")));
             return true;
         });
