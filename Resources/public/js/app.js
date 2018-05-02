@@ -19,8 +19,11 @@ function jazmyn (){
         if(annyang) {
             console.log('Annyang successfully installed');
             annyang.addCommands(jazmynCommands);//add commands
-            //annyang.debug();
-            startListening();
+            $.get('/commands', function (data){
+                console.log('Loaded commands');
+                saved = JSON.parse(data);
+                startListening();
+            });
         }
         else{
             console.log('Annyang not ready');

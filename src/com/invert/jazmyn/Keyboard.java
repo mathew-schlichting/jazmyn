@@ -15,11 +15,26 @@ public class Keyboard {
         robot = new Robot();
     }
 
+    public void press(String key){
+        if(key.equals("enter")){
+            System.out.println("Pressing enter");
+            pressKey(KeyEvent.VK_ENTER);
+        }
+        else if(key.equals("tab")){
+            pressKey(KeyEvent.VK_TAB);
+        }
+
+    }
+
+    public void pressKey(int code){
+        robot.keyPress(code);
+        robot.keyRelease(code);
+    }
+
     public void type(String words){
         System.out.println("Typing: " + words);
         for(int i=0;i<words.length();i++){
-            robot.keyPress(getKeyCode(words.charAt(i)));
-            robot.keyRelease(getKeyCode(words.charAt(i)));
+            pressKey(getKeyCode(words.charAt(i)));
         }
     }
 

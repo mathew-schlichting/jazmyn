@@ -1,7 +1,9 @@
 package com.invert.jazmyn;
 
 import java.awt.*;
+import java.io.*;
 
+import static java.lang.System.out;
 import static spark.Spark.*;
 
 public class Jazmyn {
@@ -13,7 +15,7 @@ public class Jazmyn {
     private static final int PORT = 5966;
 
     public static void main(String[] args) {
-        System.out.println("Starting Jazmyn:");
+        out.println("Starting Jazmyn:");
         instance = new Jazmyn();
         instance.startServer();
     }
@@ -26,8 +28,8 @@ public class Jazmyn {
             mouse = new Mouse();
             keyboard = new Keyboard();
         }catch (AWTException e){
-            System.out.println("Cannot create mouse/keyboard");
-            System.out.println(e.getMessage());
+            out.println("Cannot create mouse/keyboard");
+            out.println(e.getMessage());
         }
     }
 
@@ -56,6 +58,42 @@ public class Jazmyn {
             return true;
         });
 
+        get("/keypress/:key", (req, res) -> {
+            keyboard.press(req.params(":key"));
+            return true;
+        });
+
+        get("/commands", (req, res) -> {
+            try {
+                File file = new File("commands.json");
+                if(file.createNewFile()){
+                    BufferedWriter out = new BufferedWriter(new FileWriter(file));
+                    out.write("{}");
+                    out.close();
+                }
+                BufferedReader in = new BufferedReader(new FileReader(file));
+                String result = in.readLine();
+                in.close();
+                return result;
+            } catch (IOException e){
+                System.err.println(e.getMessage());
+            }
+            return false;
+        });
+
+        get("/save/:cmd", (req, res) -> {
+            try {
+                File file = new File("commands.json");
+                BufferedWriter out = new BufferedWriter(new FileWriter(file));
+                out.write(req.params(":cmd"));
+                out.close();
+                return true;
+            } catch (IOException e){
+                System.err.println(e.getMessage());
+            }
+            return false;
+        });
+
         get("/getMousePos", (req, res) -> {
             Point p = mouse.getPos();
             res.status(200);
@@ -70,6 +108,6 @@ public class Jazmyn {
             return "Goodbye";
         });
 
-        System.out.println("Listening on port: " + PORT);
+        out.println("Listening on port: " + PORT);
     }
 }

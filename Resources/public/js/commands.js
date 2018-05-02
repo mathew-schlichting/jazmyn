@@ -13,6 +13,7 @@ const CLICK = 'click';
 const HOVER = 'hover';
 const TYPE = 'type';
 const RIGHT_CLICK = 'rightClick';
+const KEY = 'keypress';
 
 var runCommand = false;
 var recording = false;
@@ -49,14 +50,22 @@ var saveClick = function(){
     }
 };
 
-var saveClick = function(){
+var saveRightClick = function(){
     if(recording) {
         $.get('/getMousePos', function (data) {
             command.stuff.push({'route': RIGHT_CLICK, 'data':data});
             command.timestamp.push(Date.now());
-            console.log('Click');
+            console.log('Right Click');
         });
     }
+};
+
+var saveKeyPress = function(key){
+    if(recording) {
+            command.stuff.push({'route': KEY, 'data':key});
+            command.timestamp.push(Date.now());
+            console.log('Key Press: ', key);
+    };
 };
 
 var saveHover = function(){
@@ -75,7 +84,14 @@ var saveCommand = function(name){
         saved[name.commandFormat()] = command;
         command = {};
         recording = false;
-        console.log('Saved');
+        $.get('/save/' + JSON.stringify(saved), function (data){
+            if(data){
+                console.log('Saved');
+            }
+            else{
+                console.log('Error while saving...');
+            }
+        });
     }
 };
 
@@ -102,7 +118,7 @@ var doCommand = function(name){
 function setTimeoutForCommand(cmd, i, startTime){
     console.log(cmd.timestamp[i] - startTime);
     setTimeout(() => {
-        if(cmd.stuff[i].route === 'type'){
+        if(cmd.stuff[i].route === TYPE || cmd.stuff[i].route === KEY){
             $.get('/' + cmd.stuff[i].route + '/' + cmd.stuff[i].data, function (data) {if(!data)console.log('Failed ' + cmd.stuff[i].route)});
         }
         else{
@@ -138,6 +154,7 @@ var jazmynCommands = {
     'right click': ()=>{execute(saveRightClick);},
     'hover': ()=>{execute(saveHover);},
     'type *words': (a)=>{execute(saveType, a);},
+    'press *key': (a)=>{execute(saveKeyPress, a);},
     'command *name': (a)=>{execute(doCommand, a);},
     'test': ()=>{execute(test);}
 };
