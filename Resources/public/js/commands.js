@@ -12,7 +12,7 @@ String.prototype.commandFormat = function() {
 const CLICK = 'click';
 const HOVER = 'hover';
 const TYPE = 'type';
-
+const RIGHT_CLICK = 'rightClick';
 
 var runCommand = false;
 var recording = false;
@@ -43,6 +43,16 @@ var saveClick = function(){
     if(recording) {
         $.get('/getMousePos', function (data) {
             command.stuff.push({'route': CLICK, 'data':data});
+            command.timestamp.push(Date.now());
+            console.log('Click');
+        });
+    }
+};
+
+var saveClick = function(){
+    if(recording) {
+        $.get('/getMousePos', function (data) {
+            command.stuff.push({'route': RIGHT_CLICK, 'data':data});
             command.timestamp.push(Date.now());
             console.log('Click');
         });
@@ -125,6 +135,7 @@ var jazmynCommands = {
     'start recording': ()=>{execute(startRecording);},
     'save recording as *name': (a)=>{execute(saveCommand, a);},
     'click': ()=>{execute(saveClick);},
+    'right click': ()=>{execute(saveRightClick);},
     'hover': ()=>{execute(saveHover);},
     'type *words': (a)=>{execute(saveType, a);},
     'command *name': (a)=>{execute(doCommand, a);},

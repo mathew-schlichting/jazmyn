@@ -9,6 +9,7 @@ public class Jazmyn {
 
     private static Jazmyn instance;
     private Mouse mouse;
+    private Keyboard keyboard;
     private static final int PORT = 5966;
 
     public static void main(String[] args) {
@@ -23,8 +24,9 @@ public class Jazmyn {
         port(PORT);
         try {
             mouse = new Mouse();
+            keyboard = new Keyboard();
         }catch (AWTException e){
-            System.out.println("Cannot create mouse");
+            System.out.println("Cannot create mouse/keyboard");
             System.out.println(e.getMessage());
         }
     }
@@ -33,6 +35,10 @@ public class Jazmyn {
     private void startServer(){
         staticFiles.location("/public");
 
+        get("/type/:words", (req, res) -> {
+            keyboard.type(req.params(":words"));
+            return true;
+        });
 
         get("/hover/:x/:y", (req, res) -> {
             mouse.move(Integer.parseInt(req.params(":x")), Integer.parseInt(req.params(":y")));
@@ -42,6 +48,11 @@ public class Jazmyn {
 
         get("/click/:x/:y", (req, res) -> {
             mouse.click(Integer.parseInt(req.params(":x")), Integer.parseInt(req.params(":y")));
+            return true;
+        });
+
+        get("/rightClick/:x/:y", (req, res) -> {
+            mouse.rightClick(Integer.parseInt(req.params(":x")), Integer.parseInt(req.params(":y")));
             return true;
         });
 

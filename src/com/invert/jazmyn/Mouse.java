@@ -66,8 +66,17 @@ public class Mouse {
         robot.mouseRelease(InputEvent.BUTTON1_MASK);
     }
 
+    public void rightClick(int x, int y){
+        move(x, y);
+        rightClick();
+    }
+
+    public void rightClick(){
+        robot.mousePress(InputEvent.BUTTON2_MASK);
+        robot.mouseRelease(InputEvent.BUTTON2_MASK);
+    }
+
     public void click(int x, int y) {
-        System.out.println(x + ":" + y);
         move(x, y);
         click();
     }
