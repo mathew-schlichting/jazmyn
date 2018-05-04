@@ -22,6 +22,7 @@ function jazmyn (){
             $.get('/commands', function (data){
                 console.log('Loaded commands');
                 saved = JSON.parse(data);
+                annyang.debug();
                 startListening();
             });
         }

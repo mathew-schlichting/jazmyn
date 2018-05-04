@@ -78,6 +78,16 @@ var saveHover = function(){
     }
 }
 
+
+function updateCommands(){
+    var html = '';
+    for( cmd in saved){
+        console.log(cmd)
+        //<li class="list-group-item">cmd</li>
+    }
+    $('#cmd-list').html(html);
+}
+
 var saveCommand = function(name){
     if(recording) {
         console.log('Saving...');
