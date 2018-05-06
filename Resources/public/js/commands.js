@@ -38,7 +38,7 @@ var saveType = function(words){
     command.stuff.push({'route': TYPE, 'data':words});
     command.timestamp.push(Date.now());
     console.log('Type: ', words);
-}
+};
 
 var saveClick = function(){
     if(recording) {
@@ -65,7 +65,7 @@ var saveKeyPress = function(key){
             command.stuff.push({'route': KEY, 'data':key});
             command.timestamp.push(Date.now());
             console.log('Key Press: ', key);
-    };
+    }
 };
 
 var saveHover = function(){
@@ -76,14 +76,15 @@ var saveHover = function(){
                     console.log('Hover');
         });
     }
-}
+};
 
 
 function updateCommands(){
     var html = '';
-    for( cmd in saved){
-        console.log(cmd)
-        //<li class="list-group-item">cmd</li>
+    for(var cmd in saved){
+        if(saved[cmd]) {
+            html += '<li class="list-group-item">' + cmd + '</li>'
+        }
     }
     $('#cmd-list').html(html);
 }
@@ -94,15 +95,20 @@ var saveCommand = function(name){
         saved[name.commandFormat()] = command;
         command = {};
         recording = false;
-        $.get('/save/' + JSON.stringify(saved), function (data){
-            if(data){
-                console.log('Saved');
-            }
-            else{
-                console.log('Error while saving...');
-            }
-        });
+        saveOnServer();
     }
+};
+
+var saveOnServer = function (){
+    $.get('/save/' + JSON.stringify(saved), function (data){
+        if(data){
+            console.log('Saved');
+            updateCommands();
+        }
+        else{
+            console.log('Error while saving...');
+        }
+    });
 };
 
 var doCommand = function(name){
@@ -113,8 +119,6 @@ var doCommand = function(name){
     if(!recording){
         cmd = saved[name.commandFormat()];
         if(cmd !== undefined){
-            console.log(cmd);
-
             startTime = cmd.timestamp[0];
             for(i=0; i<cmd.stuff.length; i++){
                 setTimeoutForCommand(cmd, i, startTime);
@@ -150,9 +154,15 @@ var test = function(){
 
 var prepareCommand = function (){
     if(!recording){
+        $('#title').html('Listening...');
         runCommand=true;
         console.log('Listening for command..');
     }
+};
+
+var deleteCommand = function (name){
+    saved[name] = undefined;
+    saveOnServer();
 };
 
 var jazmynCommands = {
@@ -166,12 +176,14 @@ var jazmynCommands = {
     'type *words': (a)=>{execute(saveType, a);},
     'press *key': (a)=>{execute(saveKeyPress, a);},
     'command *name': (a)=>{execute(doCommand, a);},
+    'delete command *name': (a)=>{execute(deleteCommand, a);},
     'test': ()=>{execute(test);}
 };
 
 function execute(fun, a, b, c, d){
     if(runCommand || recording){
         fun(a, b, c, d);
+        $('#title').html('Say "Okay Jazmyn" to start!');
     }
     else{
         console.log('Must say "Okay Jazmyn" first!')
