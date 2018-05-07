@@ -5,7 +5,7 @@ String.prototype.replaceAll = function(search, replacement) {
     return this.replace(new RegExp(search, 'g'), replacement);
 };
 String.prototype.commandFormat = function() {
-    return this.replaceAll(' ', '_');
+    return this.replaceAll(' ', '_').toLowerCase();
 };
 
 
@@ -83,7 +83,7 @@ function updateCommands(){
     var html = '';
     for(var cmd in saved){
         if(saved[cmd]) {
-            html += '<li class="list-group-item">' + cmd + '</li>'
+            html += '<li class="list-group-item">' + cmd.replaceAll('_', ' ') + '</li>'
         }
     }
     $('#cmd-list').html(html);
@@ -104,6 +104,7 @@ var saveOnServer = function (){
         if(data){
             console.log('Saved');
             updateCommands();
+            $('#title').html('Say "Okay Jazmyn" to start!');
         }
         else{
             console.log('Error while saving...');
@@ -161,7 +162,7 @@ var prepareCommand = function (){
 };
 
 var deleteCommand = function (name){
-    saved[name] = undefined;
+    saved[name.commandFormat()] = undefined;
     saveOnServer();
 };
 
@@ -183,7 +184,12 @@ var jazmynCommands = {
 function execute(fun, a, b, c, d){
     if(runCommand || recording){
         fun(a, b, c, d);
-        $('#title').html('Say "Okay Jazmyn" to start!');
+        if(recording){
+            $('#title').html('Recording...');
+        }
+        else{
+            $('#title').html('Say "Okay Jazmyn" to start!');
+        }
     }
     else{
         console.log('Must say "Okay Jazmyn" first!')
